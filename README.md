@@ -1,2 +1,8 @@
-# functional-go
-Higher order functions written in go
+# Functional Go
+Here are a list of higher order functions written in golang.
+
+### This includes 
+- Map
+- Filter 
+- Reduce
+- Compose
