@@ -91,7 +91,6 @@ func Reduce(
 }
 
 // Compose function: Given a series of function, apply on after the other.
-//  Associative function f(g(x)) == g(f(x))
 func Compose(
 	fns ...func(interface{},
 	) interface{}) func(interface{}) interface{} {
