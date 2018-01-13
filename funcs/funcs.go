@@ -19,36 +19,51 @@ func MapFn(
 func ParMap(
 	A []interface{}, fn func(interface{}) interface{}, threads int,
 ) []interface{} {
+
+	var results []interface{}
 	var wg sync.WaitGroup
 
-	var result []interface{}
-	values := make(chan []interface{})
+	valueChan := make(chan interface{})
+	resultChan := make(chan interface{})
 
-	partition := (len(A) / threads) + 1
+	done := make(chan interface{})
 
-	startIndex := 0
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for _, item := range A {
+			valueChan <- item
+		}
+		close(valueChan)
+	}()
 
 	// Map values
 	for i := 0; i < threads; i++ {
-		endIndex := min(startIndex+partition, len(A))
 		wg.Add(1)
-		go func(start, end int) {
+		go func() {
 			defer wg.Done()
-			values <- MapFn(A[start:end], fn)
-		}(startIndex, endIndex)
-		startIndex = endIndex
+			for i := range valueChan {
+				resultChan <- fn(i)
+			}
+		}()
 	}
 
 	go func() {
 		wg.Wait()
-		close(values)
+		close(done)
 	}()
 
-	// Reduce values
-	for item := range values {
-		result = append(result, item...)
+	for {
+		select {
+		case <-done:
+			return results
+		case i, ok := <-resultChan:
+			if ok {
+				results = append(results, i)
+			}
+		default:
+		}
 	}
-	return result
 }
 
 // Filter function: Based on the list and a predicate function return a new list with the values that satisfies the predicate.
