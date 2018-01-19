@@ -2,7 +2,6 @@ package funcs
 
 import (
 	"log"
-	"sort"
 	"testing"
 )
 
@@ -44,6 +43,7 @@ func assertArray(a, b []interface{}) bool {
 	}
 	for i := 0; i < n; i++ {
 		if a[i].(int) != b[i].(int) {
+			// fmt.Printf("%v != %v at index %v\n", a[i], b[i], i)
 			return false
 		}
 	}
@@ -111,9 +111,7 @@ func TestComposeFn(t *testing.T) {
 	g := square
 
 	arr := createArray(1000)
-
 	comp := Compose(f, g)
-
 	result := MapFn(arr, comp)
 
 	actual := func() []interface{} {
@@ -125,7 +123,9 @@ func TestComposeFn(t *testing.T) {
 	}()
 
 	if !assertArray(result, actual) {
-		t.Error(`Values are not equal`)
+		t.Errorf(
+			`Values are not equal %v, %v `, result[:10], actual[:10],
+		)
 	}
 
 }
@@ -145,27 +145,70 @@ func (d Dummy) Less(i, j int) bool {
 }
 
 func TestParMapFn(t *testing.T) {
-	numbers := createArray(100)
-	threads := 10
+	f := double
+	g := square
 
-	result := ParMap(numbers, double, threads)
-	sort.Sort(Dummy(result))
+	arr := createArray(1000)
+
+	comp := Pipe(f, g)
+
+	result := MapFn(arr, comp)
 
 	actual := func() []interface{} {
 		var r []interface{}
-		for _, v := range numbers {
-			r = append(r, double(v))
+		for _, val := range arr {
+			r = append(r, double(square(val)))
 		}
 		return r
 	}()
 
-	if !(assertArray(result, actual)) {
-		t.Errorf(
-			`Testing failed values are not equal.\n
-			Expected %v got %v`, actual, result,
-		)
+	if !assertArray(result, actual) {
+		t.Error(`Values are not equal`)
 	}
 
+}
+
+func TestPipe(t *testing.T) {
+	f := double
+	g := square
+
+	arr := createArray(1000)
+	pipe := Pipe(f, g)
+
+	result := MapFn(arr, pipe)
+
+	actual := func() []interface{} {
+		var r []interface{}
+		for _, val := range arr {
+			r = append(r, square(double(val)))
+		}
+		return r
+	}()
+
+	if !assertArray(result, actual) {
+		t.Errorf("Expected %v got %v", result, actual)
+	}
+}
+
+func TestReverse(t *testing.T) {
+	var arr []interface{}
+	for i := 0; i < 10; i++ {
+		arr = append(arr, i)
+	}
+
+	actual := func() []interface{} {
+		var values []interface{}
+		for i := 9; i >= 0; i-- {
+			values = append(values, i)
+		}
+		return values
+	}()
+
+	reverse(arr)
+
+	if !assertArray(actual, arr) {
+		t.Errorf("Expected %v got %v", actual, arr)
+	}
 }
 
 func createArray(size int) []interface{} {

@@ -111,6 +111,20 @@ func Compose(
 	) interface{}) func(interface{}) interface{} {
 	return func(val interface{}) interface{} {
 		result := val
+		for i := len(fns) - 1; i >= 0; i-- {
+			fn := fns[i]
+			result = fn(result)
+		}
+		return result
+	}
+}
+
+// Pipe performs the opposite of compose applys function from left to right.
+func Pipe(
+	fns ...func(interface{}) interface{},
+) func(interface{}) interface{} {
+	return func(val interface{}) interface{} {
+		result := val
 		for _, fn := range fns {
 			result = fn(result)
 		}
@@ -123,4 +137,14 @@ func min(a, b int) int {
 		return b
 	}
 	return a
+}
+
+func reverse(values []interface{}) {
+	begin := 0
+	end := len(values) - 1
+	for begin < end {
+		values[begin], values[end] = values[end], values[begin]
+		begin++
+		end--
+	}
 }
