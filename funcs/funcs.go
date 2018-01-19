@@ -109,8 +109,8 @@ func Reduce(
 
 // Compose function: Given a series of function, apply on after the other.
 func Compose(
-	fns ...func(interface{},
-	) interface{}) func(interface{}) interface{} {
+	fns ...func(interface{}) interface{},
+) func(interface{}) interface{} {
 	return func(val interface{}) interface{} {
 		result := val
 		for i := len(fns) - 1; i >= 0; i-- {
