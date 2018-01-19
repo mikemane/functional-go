@@ -4,7 +4,7 @@ Here are a list of higher order functions written in golang.
 ### Notation
 - f(a) -> bool: This means function f applied to value a returns a bool.
 - f(a) -> type(a): This means function f applied to a will return a value that is of type of a
-- A: Array of values a1,....an
+- A: A List of values a1,....an 
 - F: A series of function f1,....fn
 
 ### This includes 
