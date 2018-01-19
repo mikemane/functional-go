@@ -11,13 +11,13 @@ Here are a list of higher order functions written in golang.
 - Map: The map function will take an array of elements and apply the same function to all the elements.
 > Given a list A and a function f, Map(A, f) -> type(A) = f(A) = f(a1), f(a2),...f(an)
 
-- ParMap: This is a parallel version of the map function that takes in the same arguments of the map function. The difference is that this function takes in an extra argument. This argument speifies the amount of threads to use whilst performing the operation.
+- ParMap: This is a parallel version of the map function that takes in the same arguments as the map function. The difference is that this function takes in an extra argument. This argument specifies the amount of threads to use whilst performing the operation.
 
 - Filter: The filter function takes in a function that returns a boolean and a list and return the values that satisfies the predicate function.
-> A = a1, a2, .... an. f(a)->bool. Filter(A, f(a)) -> type(A)
+> Filter(A, f(ai)) -> type(A) where f(ai) -> bool and ai is an element of A.
 
 - Reduce: Given a list and a function that takes in two parameters of the same type of the function return the acculumated value based on the function.
-> Reduce(A, f(a = type(a), b =type(a)) -> type(a), initialValue = type(a)) -> type(a).
+> Reduce(A, f(a = type(a), b =type(a)) -> type(a), initialValue = type(a)) -> type(a) where a and b are different elements of A.
 
 - Compose: This applies a series of function on a list of objects from right to left. 
 > Compose(...F) = from fn ----> f1, applies the function list  in the order fn(fn-1(fn-2(.......f1)))
