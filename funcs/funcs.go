@@ -53,6 +53,8 @@ func ParMap(
 		close(done)
 	}()
 
+	defer close(resultChan)
+
 	for {
 		select {
 		case <-done:
