@@ -23,4 +23,4 @@ Here are a list of higher order functions written in golang.
 > Compose(...F) = from fn ----> f1, applies the function list  in the order fn(fn-1(fn-2(.......f1)))
 
 - Pipe: This applies a series of function on a list of objects from left to right.
-> Pipe(...F) = from f1 ----> fn, apply functions in the order f1(f2(f3(.......fn)))
+> Pipe(...F) = from f1 ----> fn, applies the functions in the order f1(f2(f3(.......fn)))
