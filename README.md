@@ -20,7 +20,7 @@ Here are a list of higher order functions written in golang.
 > Reduce(A, f(a = type(a), b =type(a)) -> type(a), initialValue = type(a)) -> type(a) where a and b are different elements of A.
 
 - Compose: This applies a series of function on a list of objects from right to left. 
-> Compose(F) = where F is in the order f1 ----> fn, applies the function list  in the order fn(fn-1(fn-2(.......f1))).
+> Compose(F) = where F is in the order f1 ----> fn, applies the function list in the order fn(fn-1(fn-2(.......f1))).
 
 - Pipe: This applies a series of function on a list of objects from left to right.
 > Pipe(F) = where F is in the order f1 ----> fn, applies the functions in the order f1(f2(f3(.......fn))).
