@@ -14,7 +14,7 @@ Here are a list of higher order functions written in golang.
 - ParMap: This is a parallel version of the map function that takes in the same arguments as the map function. The difference is that this function takes in an extra argument. This argument specifies the amount of threads to use whilst performing the operation.
 
 - Filter: The filter function takes in a function that returns a boolean and a list and return the values that satisfies the predicate function.
-> Filter(A, f(ai)) -> type(A) where f(ai) -> bool and ai is an element of A.
+> Filter(A, f(a)) -> type(A) where f(a) -> bool and a is an element of A.
 
 - Reduce: Given a list and a function that takes in two parameters of the same type of the function return the acculumated value based on the function.
 > Reduce(A, f(a = type(a), b =type(a)) -> type(a), initialValue = type(a)) -> type(a) where a and b are different elements of A.
