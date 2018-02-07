@@ -15,35 +15,46 @@ func MapFn(
 	return result
 }
 
+// Operation for parallel execution to ensure the order in which the operation is performed
+type Operation struct {
+	index int
+	data  interface{}
+}
+
+// NewOperation instance
+func NewOperation(index int, data interface{}) *Operation {
+	return &Operation{index, data}
+}
+
 // ParMap function: Parrallel version of the map function.
 func ParMap(
 	A []interface{}, fn func(interface{}) interface{}, threads int,
 ) []interface{} {
 
-	var results []interface{}
+	results := make([]interface{}, len(A))
 	var wg sync.WaitGroup
 
-	valueChan := make(chan interface{})
-	resultChan := make(chan interface{})
+	valueChan := make(chan *Operation)
+	resultChan := make(chan *Operation)
 
 	done := make(chan interface{})
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		for _, item := range A {
-			valueChan <- item
+		for index, item := range A {
+			valueChan <- NewOperation(index, item)
 		}
 		close(valueChan)
 	}()
 
-	// Map values
 	for i := 0; i < threads; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for i := range valueChan {
-				resultChan <- fn(i)
+			for op := range valueChan {
+				op.data = fn(op.data)
+				resultChan <- op
 			}
 		}()
 	}
@@ -59,9 +70,9 @@ func ParMap(
 		select {
 		case <-done:
 			return results
-		case i, ok := <-resultChan:
+		case op, ok := <-resultChan:
 			if ok {
-				results = append(results, i)
+				results[op.index] = op.data
 			}
 		default:
 		}

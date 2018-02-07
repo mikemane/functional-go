@@ -18,9 +18,7 @@ func TestMapFn(t *testing.T) {
 		return r
 	}()
 
-	if !(assertArray(result, actual)) {
-		t.Errorf(`Testing failed values are not equal.`)
-	}
+	assertArray(t, result, actual)
 
 }
 
@@ -36,28 +34,29 @@ func square(item interface{}) interface{} {
 	return i * i
 }
 
-func assertArray(a, b []interface{}) bool {
-	n := len(a)
-	if n != len(b) {
-		return false
+func assertArray(t *testing.T, expected, received []interface{}) {
+	expectedLength := len(expected)
+	receivedLength := len(received)
+	if expectedLength != receivedLength {
+		t.Fatalf(
+			"Length of values are not equal\nExp (len): %d\nReceived (Len): %d",
+			expectedLength, receivedLength,
+		)
 	}
-	for i := 0; i < n; i++ {
-		if a[i].(int) != b[i].(int) {
-			// fmt.Printf("%v != %v at index %v\n", a[i], b[i], i)
-			return false
+	for i := 0; i < expectedLength; i++ {
+		if expected[i] != received[i] {
+			msg := "Values at index %d are not equal\nExp: %v\nReceived::%v"
+			t.Fatalf(msg, i, expected[i], received[i])
 		}
 	}
-	return true
 }
 
 // TestFilter function
 func TestFilter(t *testing.T) {
 	array := createArray(10)
-
 	filterEven := func(v interface{}) bool {
 		return v.(int)%2 == 0
 	}
-
 	result := Filter(array, filterEven)
 
 	actual := func(arr []interface{}) []interface{} {
@@ -68,11 +67,9 @@ func TestFilter(t *testing.T) {
 			}
 		}
 		return a
-	}
+	}(array)
 
-	if !assertArray(result, actual(array)) {
-		t.Error(`Arrays are not equal`)
-	}
+	assertArray(t, actual, result)
 }
 
 // TestReduceFn :)
@@ -122,26 +119,8 @@ func TestComposeFn(t *testing.T) {
 		return r
 	}()
 
-	if !assertArray(result, actual) {
-		t.Errorf(
-			`Values are not equal %v, %v `, result[:10], actual[:10],
-		)
-	}
+	assertArray(t, actual, result)
 
-}
-
-type Dummy []interface{}
-
-func (d Dummy) Swap(i, j int) {
-	d[i], d[j] = d[j], d[i]
-}
-
-func (d Dummy) Len() int {
-	return len(d)
-}
-
-func (d Dummy) Less(i, j int) bool {
-	return d[i].(int) < d[j].(int)
 }
 
 func TestParMapFn(t *testing.T) {
@@ -151,21 +130,18 @@ func TestParMapFn(t *testing.T) {
 	arr := createArray(1000)
 
 	comp := Pipe(f, g)
+	threads := 4
 
-	result := MapFn(arr, comp)
-
+	result := ParMap(arr, comp, threads)
 	actual := func() []interface{} {
 		var r []interface{}
 		for _, val := range arr {
-			r = append(r, double(square(val)))
+			r = append(r, comp(val))
 		}
 		return r
 	}()
 
-	if !assertArray(result, actual) {
-		t.Error(`Values are not equal`)
-	}
-
+	assertArray(t, actual, result)
 }
 
 func TestPipe(t *testing.T) {
@@ -185,9 +161,7 @@ func TestPipe(t *testing.T) {
 		return r
 	}()
 
-	if !assertArray(result, actual) {
-		t.Errorf("Expected %v got %v", result, actual)
-	}
+	assertArray(t, actual, result)
 }
 
 func TestReverse(t *testing.T) {
@@ -206,9 +180,7 @@ func TestReverse(t *testing.T) {
 
 	reverse(arr)
 
-	if !assertArray(actual, arr) {
-		t.Errorf("Expected %v got %v", actual, arr)
-	}
+	assertArray(t, actual, arr)
 }
 
 func createArray(size int) []interface{} {
